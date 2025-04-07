@@ -1,0 +1,151 @@
+<div class="user-management-container">
+  <div class="header">
+    <h2>User Management</h2>
+    <button nz-button nzType="primary" (click)="showModal()">
+      <i nz-icon nzType="user-add"></i>Add User
+    </button>
+  </div>
+
+  <nz-table
+    #userTable
+    [nzData]="users"
+    [nzLoading]="isLoading"
+    nzTableLayout="fixed"
+    [nzScroll]="{ x: '1000px' }">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of userTable.data">
+        <td>{{ user.firstName }} {{ user.lastName }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <nz-tag
+            [nzColor]="user.role === 'ADMIN' ? 'red' :
+                      user.role === 'HR_MANAGER' ? 'blue' :
+                      user.role === 'EMPLOYEE' ? 'green' : 'orange'">
+            {{ user.role === 'ADMIN' ? 'Administrator' :
+               user.role === 'HR_MANAGER' ? 'HR Manager' :
+               user.role === 'EMPLOYEE' ? 'Employee' : 'Client' }}
+          </nz-tag>
+        </td>
+        <td>{{ user.phone || 'N/A' }}</td>
+        <td>
+          <nz-tag [nzColor]="user.active ? 'blue' : 'red'">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </nz-tag>
+        </td>
+        <td>
+          <a (click)="showModal(user)">Edit</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="confirmDeactivate(user.id, user.active)"
+             [ngClass]="user.active ? 'deactivate-link' : 'activate-link'">
+            {{ user.active ? 'Deactivate' : 'Activate' }}
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-modal
+    [(nzVisible)]="isModalVisible"
+    [nzTitle]="isEditMode ? 'Edit User' : 'Add User'"
+    (nzOnCancel)="cancelModal()"
+    [nzOkText]="isEditMode ? 'Update' : 'Create'"
+    (nzOnOk)="submitForm()">
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="userForm" (ngSubmit)="submitForm()">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>First Name</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input first name!">
+            <input nz-input formControlName="firstName" placeholder="First Name" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Last Name</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input last name!">
+            <input nz-input formControlName="lastName" placeholder="Last Name" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Email</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input a valid email!">
+            <input nz-input formControlName="email" placeholder="Email" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" [nzRequired]="!isEditMode">Password</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Password must be at least 6 characters!">
+            <input nz-input type="password" formControlName="password" placeholder="Password" />
+            <div *ngIf="isEditMode" class="password-hint">
+              Leave empty to keep current password
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Phone</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <input nz-input formControlName="phone" placeholder="Phone" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Address</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <input nz-input formControlName="address" placeholder="Address" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">CIN</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <input nz-input formControlName="cin" placeholder="CIN" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Role</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please select a role!">
+            <nz-select formControlName="role" (ngModelChange)="onRoleChange($event)">
+              <nz-option *ngFor="let role of userRoles" [nzValue]="role.value" [nzLabel]="role.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="userForm.get('role')?.value === 'CLIENT'">
+          <nz-form-label [nzSpan]="6" nzRequired>Client Type</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please select client type!">
+            <nz-select formControlName="clientType">
+              <nz-option *ngFor="let type of clientTypes" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="userForm.get('role')?.value === 'EMPLOYEE'">
+          <nz-form-label [nzSpan]="6">Available</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="available"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Active</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="active"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

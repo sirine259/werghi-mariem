@@ -1,0 +1,204 @@
+.dashboard-container {
+  width: 100%;
+  padding: 24px;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.user-icon {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
+}
+
+.account-icon {
+  background-color: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.project-icon {
+  background-color: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+.stat-icon i {
+  font-size: 32px;
+}
+
+.stat-details h3 {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.stat-description {
+  display: flex;
+  gap: 16px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.quick-actions {
+  margin-top: 32px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Chart styles */
+.charts-container {
+  margin-top: 32px;
+}
+
+.charts-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  flex: 1 1 350px;
+  min-width: 350px;
+}
+
+.chart-card {
+  flex: 1;
+  height: 300px;
+}
+
+.chart-wide {
+  width: 100%;
+  height: 300px;
+}
+
+/* Recent Activity styles */
+.recent-activity {
+  margin-top: 32px;
+}
+
+.recent-row {
+  display: flex;
+  gap: 24px;
+}
+
+.recent-card {
+  flex: 1;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Make sure charts are responsive */
+::ng-deep .ngx-charts {
+  width: 100% !important;
+  height: 250px !important;
+}
+
+/* Tables */
+.tables-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.table-container {
+  flex: 1 1 calc(33.333% - 16px);
+  min-width: 300px;
+}
+
+/* Actions */
+.actions-row {
+  margin-bottom: 24px;
+}
+
+.actions-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.actions-container button {
+  display: flex;
+  align-items: center;
+}
+
+.actions-container button i {
+  margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .stats-row, .charts-row, .tables-row {
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    flex: 1 1 calc(50% - 12px);
+    min-width: 250px;
+  }
+
+  .chart-container, .table-container {
+    flex: 1 1 calc(50% - 12px);
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-card, .chart-container, .table-container {
+    flex: 1 1 100%;
+  }
+}

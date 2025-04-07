@@ -1,0 +1,28 @@
+.user-management-container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  margin-bottom: 0;
+}
+
+.deactivate-link {
+  color: #ff4d4f;
+}
+
+.activate-link {
+  color: #52c41a;
+}
+
+.password-hint {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-top: 4px;
+}

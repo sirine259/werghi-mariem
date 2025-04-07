@@ -1,0 +1,36 @@
+# === Global ===
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
+dist/
+.env
+
+# === Backend (Spring Boot) ===
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Ignore IntelliJ and Eclipse config in backend
+backend/.idea/
+backend/*.iml
+
+# === Frontend (Angular) ===
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.env
+frontend/.env.*.local
+
+# Ignore build and IDE files
+frontend/.idea/
+frontend/.vscode/
+frontend/*.iml

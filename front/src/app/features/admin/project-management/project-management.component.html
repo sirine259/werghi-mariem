@@ -1,0 +1,188 @@
+<div class="container">
+  <div class="header">
+    <h2>Project Management</h2>
+    <button nz-button nzType="primary" (click)="showModal()">
+      <i nz-icon nzType="plus"></i>Add Project
+    </button>
+  </div>
+
+  <nz-table
+    #projectTable
+    [nzData]="projects"
+    [nzLoading]="isLoading"
+    nzTableLayout="fixed"
+  >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Manager</th>
+        <th>Client</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Status</th>
+        <th>Budget</th>
+        <th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let project of projectTable.data">
+        <td>{{ project.name }}</td>
+        <td>{{ project.manager?.firstName }} {{ project.manager?.lastName }}</td>
+        <td>{{ project.client ? (project.client.firstName + ' ' + project.client.lastName) : 'N/A' }}</td>
+        <td>{{ formatDate(project.startDate) }}</td>
+        <td>{{ formatDate(project.endDate) }}</td>
+        <td>
+          <nz-tag [nzColor]="getStatusColor(project.status)">
+            {{ getStatusLabel(project.status) }}
+          </nz-tag>
+        </td>
+        <td>{{ project.budget | currency }}</td>
+        <td>
+          <nz-tag [nzColor]="project.active ? 'green' : 'red'">
+            {{ project.active ? 'Active' : 'Inactive' }}
+          </nz-tag>
+        </td>
+        <td>
+          <button nz-button nzType="primary" nzSize="small" (click)="showModal(project)">
+            <i nz-icon nzType="edit"></i>
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button
+            nz-button
+            [nzType]="project.active ? 'primary' : 'default'"
+            [nzDanger]="project.active"
+            nzSize="small"
+            (click)="confirmDeactivate(project.id, project.active)"
+          >
+            <i nz-icon [nzType]="project.active ? 'stop' : 'check'"></i>
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button
+            nz-button
+            nzType="primary"
+            nzDanger
+            nzSize="small"
+            (click)="deleteProject(project.id)"
+          >
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-modal
+    [(nzVisible)]="isModalVisible"
+    [nzTitle]="isEditMode ? 'Edit Project' : 'Create Project'"
+    (nzOnCancel)="cancelModal()"
+    [nzOkText]="isEditMode ? 'Update' : 'Create'"
+    (nzOnOk)="submitForm()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="projectForm">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Name</nz-form-label>
+          <nz-form-control [nzSpan]="16" nzErrorTip="Please input the project name!">
+            <input nz-input formControlName="name" placeholder="Project Name" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Description</nz-form-label>
+          <nz-form-control [nzSpan]="16">
+            <textarea nz-input formControlName="description" [nzAutosize]="{ minRows: 3, maxRows: 6 }" placeholder="Project Description"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Start Date</nz-form-label>
+          <nz-form-control [nzSpan]="16" nzErrorTip="Please select the start date!">
+            <nz-date-picker formControlName="startDate" nzFormat="yyyy-MM-dd"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">End Date</nz-form-label>
+          <nz-form-control [nzSpan]="16">
+            <nz-date-picker formControlName="endDate" nzFormat="yyyy-MM-dd"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Status</nz-form-label>
+          <nz-form-control [nzSpan]="16" nzErrorTip="Please select the project status!">
+            <nz-select formControlName="status" nzPlaceHolder="Select status">
+              <nz-option *ngFor="let status of projectStatuses" [nzValue]="status.value" [nzLabel]="status.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Budget</nz-form-label>
+          <nz-form-control [nzSpan]="16" nzErrorTip="Please input a valid budget!">
+            <nz-input-number
+              formControlName="budget"
+              [nzMin]="0"
+              [nzStep]="100"
+              [nzFormatter]="formatCurrency"
+              [nzParser]="parseCurrency"
+              style="width: 100%"
+            ></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>HR Manager</nz-form-label>
+          <nz-form-control [nzSpan]="16" nzErrorTip="Please select an HR manager!">
+            <nz-select formControlName="managerId" nzPlaceHolder="Select HR manager">
+              <nz-option
+                *ngFor="let manager of hrManagers"
+                [nzValue]="manager.id"
+                [nzLabel]="manager.firstName + ' ' + manager.lastName"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Client</nz-form-label>
+          <nz-form-control [nzSpan]="16">
+            <nz-select formControlName="clientId" nzPlaceHolder="Select client" nzAllowClear>
+              <nz-option
+                *ngFor="let client of clients"
+                [nzValue]="client.id"
+                [nzLabel]="client.firstName + ' ' + client.lastName"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Employees</nz-form-label>
+          <nz-form-control [nzSpan]="16">
+            <nz-select
+              formControlName="employeeIds"
+              nzMode="multiple"
+              nzPlaceHolder="Select employees"
+              style="width: 100%"
+            >
+              <nz-option
+                *ngFor="let employee of employees"
+                [nzValue]="employee.id"
+                [nzLabel]="employee.firstName + ' ' + employee.lastName"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Active</nz-form-label>
+          <nz-form-control [nzSpan]="16">
+            <nz-switch formControlName="active"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

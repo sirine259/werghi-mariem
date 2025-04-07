@@ -1,0 +1,58 @@
+.container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  margin-bottom: 0;
+}
+
+nz-table {
+  margin-top: 16px;
+}
+
+td button {
+  margin-right: 8px;
+}
+
+td button:last-child {
+  margin-right: 0;
+}
+
+nz-form-item {
+  margin-bottom: 16px;
+}
+
+/* Make the date picker take 100% width */
+nz-date-picker {
+  width: 100%;
+}
+
+/* For adding some spacing in the table cells */
+td {
+  padding: 12px 8px;
+}
+
+/* Limit the width of the description field to prevent it from getting too long */
+td:nth-child(1) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Style the project name to make it stand out */
+td:nth-child(1) {
+  font-weight: 500;
+}
+
+/* Add hover effect to the table rows */
+tr:hover {
+  background-color: #fafafa;
+}

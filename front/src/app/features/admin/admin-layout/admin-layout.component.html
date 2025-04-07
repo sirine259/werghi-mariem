@@ -1,0 +1,60 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar"
+            nzCollapsible
+            nzWidth="256px"
+            nzBreakpoint="md"
+            [(nzCollapsed)]="isCollapsed">
+    <div class="sidebar-logo">
+      <a href="#">
+        <h1>HR Management</h1>
+      </a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/admin/dashboard">
+          <i nz-icon nzType="dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/admin/users">
+          <i nz-icon nzType="user"></i>
+          <span>User Management</span>
+        </a>
+      </li>
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/admin/accounts">
+          <i nz-icon nzType="team"></i>
+          <span>Account Management</span>
+        </a>
+      </li>
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/admin/projects">
+          <i nz-icon nzType="project"></i>
+          <span>Project Management</span>
+        </a>
+      </li>
+      <li nz-menu-item (click)="logout()">
+        <i nz-icon nzType="logout"></i>
+        <span>Logout</span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+          <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+        </span>
+        <span class="user-info">
+          <span>Welcome, {{currentUser?.firstName}} {{currentUser?.lastName}}</span>
+        </span>
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

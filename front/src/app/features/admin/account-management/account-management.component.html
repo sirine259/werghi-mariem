@@ -1,0 +1,157 @@
+<div class="container">
+  <div class="header">
+    <h2>Account Management</h2>
+    <button nz-button nzType="primary" (click)="showModal()">
+      <i nz-icon nzType="plus"></i>Add Account
+    </button>
+  </div>
+
+  <nz-table
+    #accountsTable
+    [nzData]="accounts"
+    [nzLoading]="isLoading"
+    nzTableLayout="fixed"
+  >
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Account Number</th>
+        <th>Account Name</th>
+        <th>Type</th>
+        <th>Balance</th>
+        <th>HR Manager</th>
+        <th>Client</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let account of accountsTable.data">
+        <td>{{ account.id }}</td>
+        <td>{{ account.accountNumber }}</td>
+        <td>{{ account.accountName }}</td>
+        <td>{{ account.accountType }}</td>
+        <td>{{ account.balance | currency }}</td>
+        <td>{{ account.hrManager?.firstName }} {{ account.hrManager?.lastName }}</td>
+        <td>{{ account.intermediaryClient?.firstName }} {{ account.intermediaryClient?.lastName }}</td>
+        <td>
+          <nz-tag [nzColor]="account.active ? 'green' : 'red'">
+            {{ account.active ? 'Active' : 'Inactive' }}
+          </nz-tag>
+        </td>
+        <td>
+          <button nz-button nzType="primary" nzSize="small" (click)="showModal(account)">
+            <i nz-icon nzType="edit"></i>
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button
+            nz-button
+            [nzType]="account.active ? 'primary' : 'default'"
+            [nzDanger]="account.active"
+            nzSize="small"
+            (click)="confirmDeactivate(account.id, account.active)"
+          >
+            <i nz-icon [nzType]="account.active ? 'stop' : 'check'"></i>
+          </button>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button
+            nz-button
+            nzType="primary"
+            nzDanger
+            nzSize="small"
+            nz-popconfirm
+            nzPopconfirmTitle="Are you sure you want to delete this account?"
+            nzPopconfirmPlacement="top"
+            (nzOnConfirm)="deleteAccount(account.id)"
+          >
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-modal
+    [(nzVisible)]="isModalVisible"
+    [nzTitle]="isEditMode ? 'Edit Account' : 'Create Account'"
+    (nzOnCancel)="cancelModal()"
+    [nzOkText]="isEditMode ? 'Update' : 'Create'"
+    (nzOnOk)="submitForm()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="accountForm">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Account Number</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input the account number!">
+            <input nz-input formControlName="accountNumber" placeholder="Account Number" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Account Name</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input the account name!">
+            <input nz-input formControlName="accountName" placeholder="Account Name" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Account Type</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please select the account type!">
+            <nz-select formControlName="accountType" nzPlaceHolder="Select account type">
+              <nz-option *ngFor="let type of accountTypes" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Initial Balance</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please input a valid balance!">
+            <nz-input-number
+              formControlName="balance"
+              [nzMin]="0"
+              [nzPrecision]="2"
+              [nzStep]="100"
+              [nzPlaceHolder]="'0.00'"
+              [nzFormatter]="formatterDollar"
+              [nzParser]="parserDollar"
+              style="width: 100%"
+            ></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>HR Manager</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please select an HR manager!">
+            <nz-select formControlName="hrManagerId" nzPlaceHolder="Select HR manager">
+              <nz-option
+                *ngFor="let manager of hrManagers"
+                [nzValue]="manager.id"
+                [nzLabel]="manager.firstName + ' ' + manager.lastName"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>Intermediary Client</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="Please select an intermediary client!">
+            <nz-select formControlName="intermediaryClientId" nzPlaceHolder="Select client">
+              <nz-option
+                *ngFor="let client of intermediaryClients"
+                [nzValue]="client.id"
+                [nzLabel]="client.firstName + ' ' + client.lastName"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">Active</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="active"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>

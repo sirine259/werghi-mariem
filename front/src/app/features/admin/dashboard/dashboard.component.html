@@ -1,0 +1,227 @@
+<div class="dashboard-container">
+  <nz-spin [nzSpinning]="isLoading">
+    <!-- Stats Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <nz-card>
+          <div class="stat-content">
+            <div class="stat-icon user-icon">
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Users</h3>
+              <div class="stat-value">{{ totalUsers }}</div>
+              <div class="stat-description">
+                <span>{{ totalEmployees }} Employees</span>
+                <span>{{ totalClients }} Clients</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+
+      <div class="stat-card">
+        <nz-card>
+          <div class="stat-content">
+            <div class="stat-icon account-icon">
+              <i nz-icon nzType="wallet" nzTheme="outline"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Accounts</h3>
+              <div class="stat-value">{{ totalAccounts }}</div>
+              <div class="stat-description">
+                <span>{{ activeAccounts }} Active</span>
+                <span>{{ inactiveAccounts }} Inactive</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+
+      <div class="stat-card">
+        <nz-card>
+          <div class="stat-content">
+            <div class="stat-icon project-icon">
+              <i nz-icon nzType="project" nzTheme="outline"></i>
+            </div>
+            <div class="stat-details">
+              <h3>Total Projects</h3>
+              <div class="stat-value">{{ totalProjects }}</div>
+              <div class="stat-description">
+                <span>{{ activeProjects }} Active</span>
+                <span>{{ totalProjects - activeProjects }} Inactive</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-container">
+        <nz-card nzTitle="Users by Role">
+          <ngx-charts-pie-chart
+            [results]="userRolesData"
+            [view]="[350, 300]"
+            [scheme]="colorScheme"
+            [gradient]="false"
+            [legend]="showLegend"
+            [labels]="showLabels"
+            [doughnut]="doughnut"
+            (select)="onSelect($event)">
+          </ngx-charts-pie-chart>
+        </nz-card>
+      </div>
+
+      <div class="chart-container">
+        <nz-card nzTitle="Account Status">
+          <ngx-charts-pie-chart
+            [results]="accountStatusData"
+            [view]="[350, 300]"
+            [scheme]="colorScheme"
+            [gradient]="false"
+            [legend]="showLegend"
+            [labels]="showLabels"
+            [doughnut]="doughnut"
+            (select)="onSelect($event)">
+          </ngx-charts-pie-chart>
+        </nz-card>
+      </div>
+
+      <div class="chart-container">
+        <nz-card nzTitle="Project Status">
+          <ngx-charts-pie-chart
+            [results]="projectStatusData"
+            [view]="[350, 300]"
+            [scheme]="colorScheme"
+            [gradient]="false"
+            [legend]="showLegend"
+            [labels]="showLabels"
+            [doughnut]="doughnut"
+            (select)="onSelect($event)">
+          </ngx-charts-pie-chart>
+        </nz-card>
+      </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="tables-row">
+      <div class="table-container">
+        <nz-card nzTitle="Recent Users">
+          <nz-table
+            #usersTable
+            [nzData]="recentUsers"
+            [nzShowPagination]="false"
+            [nzFrontPagination]="false"
+            [nzScroll]="{ y: '240px' }">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of recentUsers">
+                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <nz-tag [nzColor]="user.role === 'ADMIN' ? 'red' : user.role === 'HR_MANAGER' ? 'blue' : user.role === 'EMPLOYEE' ? 'green' : 'orange'">
+                    {{ user.role }}
+                  </nz-tag>
+                </td>
+                <td>{{ formatDate(user.createdDate) }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-card>
+      </div>
+
+      <div class="table-container">
+        <nz-card nzTitle="Recent Accounts">
+          <nz-table
+            #accountsTable
+            [nzData]="recentAccounts"
+            [nzShowPagination]="false"
+            [nzFrontPagination]="false"
+            [nzScroll]="{ y: '240px' }">
+            <thead>
+              <tr>
+                <th>Account Number</th>
+                <th>Type</th>
+                <th>Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let account of recentAccounts">
+                <td>{{ account.accountNumber }}</td>
+                <td>{{ account.accountType }}</td>
+                <td>${{ account.balance.toFixed(2) }}</td>
+                <td>
+                  <nz-tag [nzColor]="account.active ? 'green' : 'red'">
+                    {{ account.active ? 'Active' : 'Inactive' }}
+                  </nz-tag>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-card>
+      </div>
+
+      <div class="table-container">
+        <nz-card nzTitle="Recent Projects">
+          <nz-table
+            #projectsTable
+            [nzData]="recentProjects"
+            [nzShowPagination]="false"
+            [nzFrontPagination]="false"
+            [nzScroll]="{ y: '240px' }">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>Budget</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let project of recentProjects">
+                <td>{{ project.name }}</td>
+                <td>
+                  <nz-tag [nzColor]="getStatusColor(project.status)">
+                    {{ getStatusLabel(project.status) }}
+                  </nz-tag>
+                </td>
+                <td>{{ formatDate(project.startDate) }}</td>
+                <td>${{ project.budget?.toFixed(2) || 'N/A' }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-card>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-row">
+      <nz-card nzTitle="Quick Actions">
+        <div class="actions-container">
+          <button nz-button nzType="primary" routerLink="/admin/users">
+            <i nz-icon nzType="user-add"></i>Manage Users
+          </button>
+          <button nz-button nzType="primary" routerLink="/admin/accounts">
+            <i nz-icon nzType="wallet"></i>Manage Accounts
+          </button>
+          <button nz-button nzType="primary" routerLink="/admin/projects">
+            <i nz-icon nzType="project"></i>Manage Projects
+          </button>
+          <button nz-button nzType="default">
+            <i nz-icon nzType="file-pdf"></i>Generate Reports
+          </button>
+        </div>
+      </nz-card>
+    </div>
+  </nz-spin>
+</div>
